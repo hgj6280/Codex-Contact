@@ -485,3 +485,7 @@ Add your own configuration through `data/settings.json`, environment variables, 
 This is a local automation tool. Before enabling iMessage, QQ, remote execution, proxy control, or GUI control, make sure you understand the related permissions and local security impact.
 
 本项目是本机自动化工具。启用 iMessage、QQ、远程执行、代理控制或 GUI 控制前，请确认你理解对应权限和本机安全影响。
+
+## 软件与素材授权
+
+软件采用 [MIT 许可证](LICENSE)。词库数据、Live2D 运行库及角色素材的来源与授权范围见[第三方声明](THIRD_PARTY_NOTICES.md)。

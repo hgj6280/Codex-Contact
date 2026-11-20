@@ -107,6 +107,10 @@ def check_tree(tree):
                 parts[-1].casefold() == "project_status.md" or path in BLOCK_EXACT or path.startswith("modules/qq-llbot/bin/")):
             fail(path, "runtime, credential, link or archive path")
             continue
+        if path.startswith("assets/qq-character/") and path not in (
+                "assets/qq-character/LICENSE.md", "assets/qq-character/hugongjing/appearance.md"):
+            fail(path, "unreleased character asset")
+            continue
         check_text(path, path, policy.get("paths", {}).get(path))
         content = contents[sha]
         if content.startswith(b"SQLite format 3\x00"):
@@ -128,9 +132,7 @@ def check_tree(tree):
                 raise ValueError()
             text = content.decode()
         except ValueError:
-            if (not path.startswith("assets/qq-character/") or not path.endswith(".png") or
-                    policy["art"].get(path) != hashlib.sha256(content).hexdigest()):
-                fail(path, "unreviewed binary")
+            fail(path, "unreviewed binary")
             continue
         check_text(path, text, policy["numbers"].get(path))
 
