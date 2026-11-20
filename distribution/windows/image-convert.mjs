@@ -1,0 +1,12 @@
+import sharp from 'sharp';
+const args=process.argv.slice(2);
+const outIndex=args.indexOf('--out');
+const source=args[outIndex-1],destination=args[outIndex+1];
+const formatIndex=args.indexOf('format');
+const format=formatIndex>=0?args[formatIndex+1]:'jpeg';
+const sizeIndex=args.indexOf('-Z');
+const qualityIndex=args.indexOf('formatOptions');
+let image=sharp(source,{animated:false});
+if(sizeIndex>=0)image=image.resize({width:Number(args[sizeIndex+1]),height:Number(args[sizeIndex+1]),fit:'inside',withoutEnlargement:true});
+if(format==='png')image=image.png();else image=image.jpeg({quality:qualityIndex>=0?Number(args[qualityIndex+1]):82});
+await image.toFile(destination);

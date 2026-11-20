@@ -1,0 +1,34 @@
+services:
+  napcat:
+    # Official v4.18.42 ARM64 content digest, fetched through a registry mirror.
+    image: docker.m.daocloud.io/mlikiowa/napcat-docker@sha256:149fae81e2ccec10e5d1be2f9f86a1a2d6e1d5c70691f892dce00b7328f2ca72
+    platform: linux/arm64
+    container_name: codex-contact-napcat
+    restart: unless-stopped
+    hostname: qq-local
+    environment:
+      ACCOUNT: '${QQ_ACCOUNT:-}'
+      NAPCAT_UID: '501'
+      NAPCAT_GID: '20'
+    cpus: 1.5
+    mem_limit: 1536m
+    memswap_limit: 1536m
+    pids_limit: 384
+    shm_size: 128m
+    ulimits:
+      core:
+        soft: 0
+        hard: 0
+    logging:
+      driver: local
+      options:
+        max-size: 5m
+        max-file: '3'
+    ports:
+      - '127.0.0.1:3001:3001'
+      - '127.0.0.1:6099:6099'
+    volumes:
+      - '${HOME}/Library/Application Support/CodexRemoteContact/linux-qq/config:/app/napcat/config'
+      - '${HOME}/Library/Application Support/CodexRemoteContact/linux-qq/qq:/app/.config/QQ'
+      - '${HOME}/Library/Application Support/CodexRemoteContact/linux-qq/plugins:/app/napcat/plugins'
+      - '${HOME}/Library/Application Support/CodexRemoteContact/linux-qq/cache:/app/napcat/cache'

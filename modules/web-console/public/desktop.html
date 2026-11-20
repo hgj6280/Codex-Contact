@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob: https://gchat.qpic.cn https://c2cpicdw.qpic.cn https://multimedia.nt.qq.com.cn; connect-src 'self'; object-src 'none'; base-uri 'none'; frame-src 'none'">
+  <title>狐宫静 QQ</title><link rel="stylesheet" href="desktop.css">
+</head>
+<body>
+  <div class="desktop">
+    <aside class="rail" aria-label="主导航">
+      <div class="fox-mark" title="狐宫静 QQ">🦊</div><span class="brand-name">狐宫静</span>
+      <button class="rail-button active" id="navChats" title="回到聊天与会话列表" aria-label="聊天"><span class="rail-icon" aria-hidden="true">☏</span><span class="rail-label">聊天</span></button>
+      <button class="rail-button" id="navContacts" title="好友、群聊与申请" aria-label="联系人与申请"><span class="rail-icon" aria-hidden="true">♧</span><span class="rail-label">好友</span></button>
+      <button class="rail-button" id="navAI" title="帮写回复与生成图片" aria-label="AI 创作"><span class="rail-icon" aria-hidden="true">✦</span><span class="rail-label">AI 创作</span></button>
+      <button class="rail-button" id="navLife" title="桌面分身、作息与B站" aria-label="生活与桌面分身"><span class="rail-icon" aria-hidden="true">❀</span><span class="rail-label">生活</span></button>
+      <div class="rail-bottom">
+        <button class="rail-button" id="theme" title="切换夜间模式" aria-label="切换夜间模式"><span class="rail-icon" aria-hidden="true">☾</span><span class="rail-label">夜间</span></button>
+        <button class="rail-button" id="navSettings" title="人设、模型与登录" aria-label="设置"><span class="rail-icon" aria-hidden="true">⚙</span><span class="rail-label">设置</span></button>
+      </div>
+    </aside>
+    <aside class="sessions">
+      <header class="session-heading"><div><h1>消息</h1><span id="account">狐宫静 QQ</span></div><span class="online-dot" id="onlineDot" title="正在检查登录"></span></header>
+      <div class="search-wrap"><input id="search" type="search" placeholder="搜索全部好友 / 群聊" aria-label="搜索聊天"></div>
+      <div class="filters" role="group" aria-label="会话类型"><button data-filter="all" class="selected">全部</button><button data-filter="group">群聊</button><button data-filter="private">私聊</button></div>
+      <button id="bulkAiShortcut" class="quiet wide" type="button">批量管理 AI 回复</button>
+      <div class="session-list" id="conversations"><p class="empty-small">正在读取会话…</p></div>
+      <footer class="session-footer"><span id="connection">连接中</span><button id="syncContacts" title="同步所有 QQ 好友与群聊">同步</button><button id="login">扫码登录</button></footer>
+    </aside>
+    <main class="conversation">
+      <header class="conversation-heading"><div><h2 id="title">选择一个会话</h2><p id="subtitle">你的消息与 AI 群友，在同一个桌面</p></div><div class="heading-actions"><label class="ai-switch"><input id="autoAI" type="checkbox" role="switch" aria-label="本会话 AI 自动回复" disabled><span>本会话 AI</span></label><button id="manageGroup" hidden title="群成员与管理">群管理</button><button id="details" title="打开设置">•••</button></div></header>
+      <div class="messages" id="messages" role="log" aria-label="聊天消息"><div class="welcome"><div class="welcome-fox">🦊</div><h2>欢迎回来，狐宫静</h2><p>选一个群聊或私聊，开始聊天吧。</p><p class="muted">AI 帮写和生图只生成预览，由你确认发送。</p></div></div>
+      <section class="draft-preview" id="draftPreview" hidden><header><strong>✦ AI 草稿 · 尚未发送</strong><button id="discardDraft">关闭</button></header><p id="draftText"></p><div id="draftImages"></div><button class="primary" id="useDraft">放入输入框</button></section>
+      <section class="composer">
+        <div class="composer-tools"><button id="attach" title="选择图片">▧ 图片</button><button id="stickers" title="表情包素材库">☺ 表情</button><button id="mention" title="选择要 @ 的群成员">@ 群友</button><button id="aiWrite">✦ AI 帮写</button><button id="aiDraw">✧ AI 生图</button><span class="tools-spacer"></span><span class="model-label" id="modelLabel">读取模型…</span></div>
+        <div id="mentionChips" class="mention-chips" hidden></div>
+        <div class="reply-preview" id="replyPreview" hidden><span id="replyText"></span><button id="clearReply" aria-label="取消引用">×</button></div>
+        <div class="attachment" id="attachment" hidden><img id="attachmentImage" alt="待发送图片"><span id="attachmentName"></span><button id="clearAttachment">移除</button></div>
+        <textarea id="input" aria-label="消息输入框" placeholder="输入消息…" maxlength="2000" disabled></textarea>
+        <div class="composer-footer"><span id="hint">Enter 发送 · Shift+Enter 换行</span><button class="primary" id="send" disabled>发送 ↵</button></div>
+      </section>
+    </main>
+    <aside class="drawer" id="drawer" hidden>
+      <header><h2 id="drawerTitle">AI 创作</h2><button id="closeDrawer" aria-label="关闭侧栏">收起 ×</button></header>
+      <div id="aiPanel">
+        <p class="muted">帮你写回复、画狐宫静。先预览，满意了再发；不会自动发送。群聊或私聊发送 /new 可开启新 AI 会话，不删除聊天记录。</p>
+        <label for="aiPrompt">想让 AI 做什么？</label><textarea id="aiPrompt" maxlength="4000" placeholder="例如：帮我回复上面这句话；画一张狐宫静开心的表情包"></textarea>
+        <button class="quiet wide" id="aiImageSettings">生图模型：读取中… · 更改</button>
+        <button class="primary wide" id="generateDraft">生成预览</button><p id="aiStatus" role="status"></p>
+        <button class="quiet wide" id="openArchive">查看生成的图片 ↗</button>
+      </div>
+      <div id="settingsPanel" hidden>
+        <section class="global-ai-settings"><h3>AI 自动回复总开关</h3><label class="ai-switch"><input id="globalAI" type="checkbox" role="switch" aria-label="AI 自动回复总开关"><span>允许自动回复</span></label><p class="muted">总开关关闭时全部暂停，但不会改变各会话的独立设置。群聊或私聊可在聊天顶部单独开关，手动聊天和 AI 草稿不受影响。</p></section>
+        <details id="conversationAiBulk"><summary>批量管理 AI 回复 · 多选群聊与私聊</summary>
+          <input data-bulk-search placeholder="搜索名称或QQ号" aria-label="搜索会话">
+          <select data-bulk-kind aria-label="会话类型"><option value="all">全部</option><option value="group">群聊</option><option value="private">私聊</option></select>
+          <button type="button" data-bulk-all>全选搜索结果</button><button type="button" data-bulk-clear>清空选择</button><button type="button" data-bulk-reload>刷新</button>
+          <p data-bulk-count>已选择0个会话</p><div data-bulk-list class="bulk-ai-list"></div>
+          <button type="button" class="primary wide" data-bulk-on>开启选中会话</button><button type="button" class="quiet wide" data-bulk-off>关闭选中会话</button>
+          <p class="muted" data-bulk-status role="status"></p>
+        </details>
+        <section id="voiceEditor" class="settings-section">
+          <h3>QQ 回复方式</h3>
+          <label><input type="checkbox" data-voice-enabled disabled>开启 QQ 语音（群聊与私聊）</label>
+          <select data-voice-mode aria-label="QQ 回复方式" disabled><option value="text">文字：始终打字</option><option value="voice">语音：优先语音</option><option value="mixed">掺半：文字和语音搭配</option><option value="smart">智能：被友好打趣时语音</option><option value="on_request">仅明确要求时发语音</option></select>
+          <label>掺半时语音比例（%）<input data-voice-percent type="number" min="0" max="100" disabled></label>
+          <details><summary>指定群的语音比例</summary><p class="muted">每行填写“群号:百分比”，留空使用默认比例。</p><textarea data-voice-rates rows="3" aria-label="各群语音比例" disabled></textarea></details>
+          <button class="primary wide" data-voice-save disabled>保存回复方式</button><button class="quiet wide" data-voice-advanced>音色与试听设置</button>
+          <p class="muted" data-voice-status role="status">正在读取声音设置…</p>
+        </section>
+        <section class="trigger-editor" id="triggerEditor" aria-label="群聊触发词设置">
+          <h3>群聊触发词</h3>
+          <label class="trigger-switch"><input type="checkbox" data-trigger-toggle role="switch" disabled>启用关键词触发</label>
+          <p class="muted">群消息包含任意一个词就能触发 AI，不需要 @。对所有已授权群聊生效。</p>
+          <label for="triggerText">自定义触发词</label>
+          <textarea id="triggerText" data-trigger-text rows="4" maxlength="1000" spellcheck="false" disabled placeholder="狐宫静&#10;小狐狸&#10;静静"></textarea>
+          <p class="muted">每行一个，也可用逗号分隔；最多 20 个，每个最多 40 字。按文字包含匹配，英文不区分大小写，不是正则表达式。</p>
+          <button class="primary wide" data-trigger-save disabled>保存触发词</button><button class="quiet wide" data-trigger-reload>重新读取</button>
+          <p class="muted" data-trigger-status role="status">打开设置后读取…</p>
+          <p class="muted">关闭此开关只停用关键词触发，@、引用自己的消息、私聊及独立命令不变；已忽略的机器人仍不会触发。</p>
+        </section>
+        <section class="personality-editor" id="personalityEditor" aria-label="QQ 人设设置">
+          <h3>QQ 群友人设</h3>
+          <label class="personality-switch"><input type="checkbox" data-personality-toggle role="switch" disabled>启用自定义人设</label>
+          <p class="muted">适用于所有群聊和私聊。关闭开关恢复默认，已保存的自定义内容仍保留。</p>
+          <label for="personalityText">编辑人设</label>
+          <label>角色名字（留空从人设首句识别）<input data-personality-name aria-label="角色名字" maxlength="32" placeholder="从人设首句识别" disabled></label>
+          <textarea id="personalityText" data-personality-text rows="12" maxlength="8000" spellcheck="false" disabled placeholder="写下角色性格、语气、语癖、回复长度和互动习惯…"></textarea>
+          <p class="personality-count" data-personality-count>0 / 8000</p>
+          <button class="primary wide" type="button" data-personality-save disabled>保存人设</button>
+          <div class="personality-actions"><button class="quiet" type="button" data-personality-reset disabled>填入默认人设</button><button class="quiet" type="button" data-personality-reload>重新读取</button></div>
+          <p class="muted" data-personality-status role="status">正在读取人设…</p>
+          <a class="personality-backup" href="/api/qq/personality/default" download="qq-soul.default-backup.md">下载默认人设备份</a>
+          <p class="muted">保存后下一条新请求生效。人设不改变权限和触发条件；狐宫静 OC 参考图保留。内容越精简，首次回复越快。</p>
+        </section>
+        <details id="autonomyEditor"><summary>自主聊天与操作权限</summary>
+          <label><input type="checkbox" data-autonomy-enabled disabled>启用自主聊天决策</label>
+          <label><input type="checkbox" data-autonomy-contextualReplies disabled>理解上下文中的呼唤和提及</label>
+          <p class="muted">可参考本群近两小时内最多 120 条消息，每次按相关性选最多 16 条，总长度不超过 2800 字符。优先保留最近对话、引用和称呼来源，判断“她呢”“刚才那个 AI”在说谁；指别人或不确定时保持安静。按群隔离，沿用会话 AI 开关，不额外调用总结模型。</p>
+          <p class="muted">有人继续话题就能接，不用每句都 @；也会低频加入能接上的新话题。日常回复可自然分成一至三条，没人接就停，不固定连发。续聊判断间隔至少五秒，仍遵守频率和会话开关。</p>
+          <details><summary>参与群聊的节奏</summary>
+            <label>水群参与强度（0–1）<input data-autonomy-passiveProbability type="number" min="0" max="1" step="0.01" value="0.03" disabled></label>
+            <p class="muted">只影响没有明确叫它时的插话机会；每个机会窗口只抽一次，不是每条消息都抽。@、叫名字和已接上的本人追问优先。</p>
+            <label>主动开新话题概率（0–1）<input data-autonomy-topicProbability type="number" min="0" max="1" step="0.01" value="0.05" disabled></label>
+            <label>引用回复概率（0–1）<input data-autonomy-quoteProbability type="number" min="0" max="1" step="0.01" value="0.1" disabled></label>
+            <label>自动 @ 发送者概率（0–1，默认不 @）<input data-autonomy-atProbability type="number" min="0" max="1" step="0.01" value="0" disabled></label>
+            <label><input data-autonomy-highEqEnabled type="checkbox" checked disabled>结合连续发言、引用和说话对象接话</label>
+            <label><input data-autonomy-socialPlannerEnabled type="checkbox" checked disabled>持续聊天规划 · 接续和收尾</label>
+            <label><input data-autonomy-dynamicRhythmEnabled type="checkbox" checked disabled>动态水群节奏 · 最近说多了就少插话</label>
+            <label><input data-autonomy-replyCooldownEnabled type="checkbox" checked disabled>启用主动回复冷却</label>
+            <p class="muted">关闭冷却也不会取消全账号每日/每分钟额度。闲聊保持精简；明确要求详细罗列时完整使用文字，按实际长度分段，不强制压成短句。</p>
+          </details>
+          <p class="muted" data-autonomy-target></p><label><input type="checkbox" data-autonomy-conversation disabled>当前会话启用自主决策</label>
+          <label><input type="checkbox" data-autonomy-friendRequests disabled>自动审核并同意正常好友申请</label>
+          <label><input type="checkbox" data-autonomy-privateMessages disabled>允许主动私聊已有好友</label>
+          <label><input type="checkbox" data-autonomy-moderation disabled>允许自主禁言和解除禁言</label>
+          <p class="muted">群管需本人实际有权限，且指令来自下方授权 QQ 或本群管理员。好友仅支持处理收到的申请，不能主动发起新申请。</p>
+          <label>授权管理 QQ<input data-autonomy-controllers placeholder="多个 QQ 号用逗号分隔" disabled></label>
+          <label>主动插话间隔（秒，续聊单独限频）<input data-autonomy-interval type="number" min="15" max="1800" value="20"></label>
+          <label>每群每小时主动回复上限<input data-autonomy-limit type="number" min="1" max="20" value="15"></label>
+          <label>单次自主禁言上限（分钟）<input data-autonomy-mute type="number" min="1" max="1440" value="10"></label>
+          <button class="primary wide" type="button" data-autonomy-save disabled>保存自主聊天设置</button><button class="quiet wide" type="button" data-autonomy-reload>刷新设置与操作记录</button>
+          <p class="muted" data-autonomy-status role="status">正在读取…</p><details><summary>最近判断与操作记录</summary><pre data-autonomy-log></pre></details>
+        </details>
+        <details id="groupDigestEditor"><summary>群聊总结 · 时间范围与关注群友</summary>
+          <label>本群默认时间范围（小时，最多720小时）<input data-digest-hours type="number" min="0.017" max="720" step="any" value="24"></label>
+          <label><input data-digest-auto type="checkbox">每天自动总结并归档本群</label>
+          <label>每天几点（北京时间）<input data-digest-hour type="number" min="0" max="23" value="21"></label>
+          <label><input data-digest-send type="checkbox">自动总结后发送到本群（关闭时只归档）</label>
+          <label>关注的群友 QQ 号（用顿号或空格分隔）<textarea data-digest-users rows="2" placeholder="10012、10019"></textarea></label>
+          <button type="button" class="primary wide" data-digest-save>保存本群设置</button><button type="button" class="quiet" data-digest-reload>读取当前群设置</button>
+          <p class="muted" data-digest-status role="status">群内可用：/群总结 最近2小时；/群总结 群友 10012 最近7天；/群总结 关注 10012。按需补读QQ可提供的群历史文字；若只读到部分，会标明范围；图片语音不会假装读过。记录保留30天，总量最多5万条；超过范围会说明。</p>
+        </details>
+        <details id="roleEditor"><summary>角色库 · 录入人物与参考图</summary>
+          <label><input data-role-all type="checkbox" checked>查看统一角色库（全部群聊、私聊与内置角色）</label>
+          <p class="muted">资料和参考图集中保存；统一管理不会自动向其他会话开放私聊角色。</p>
+          <button type="button" class="quiet" data-role-export>导出完整角色库到下载</button>
+          <label>导入迁移包<input data-role-import-file type="file" accept=".gz,.qqroles,application/gzip"></label>
+          <button type="button" class="quiet" data-role-import>合并导入 · 保留本机已有设定</button>
+          <p data-role-scope class="muted">请先选择群聊或私聊</p>
+          <p class="muted">群内角色在本群共用；私聊角色仅在该私聊使用。不会改变狐宫静自身人设。群友本人、昵称和 OC 分开记录。</p>
+          <div data-role-list></div>
+          <button type="button" class="quiet" data-role-new>新增角色</button><button type="button" class="quiet" data-role-reload>重新读取</button>
+          <label>角色名<input data-role-name maxlength="40" placeholder="例如：雪莉"></label>
+          <label>别名（用顿号分隔）<input data-role-aliases maxlength="400" placeholder="例如：雪莉喵"></label>
+          <label>角色设定<textarea data-role-description rows="5" maxlength="3000" placeholder="发型发色、眼睛、服装、饰品、性格等。未知的部分不必编写。"></textarea></label>
+          <label>参考图 · 最多 3 张，每张 ≤ 5 MB<input data-role-files type="file" accept="image/png,image/jpeg,image/gif,image/webp" multiple></label>
+          <div data-role-images></div>
+          <button type="button" class="primary wide" data-role-save>保存角色</button><button type="button" class="quiet" data-role-delete>删除此角色卡</button>
+          <p data-role-status class="muted" role="status">也可在聊天中附图或引用图片说：/角色 录入 雪莉：外观设定。之后说“给雪莉生成这个表情包”。</p>
+        </details>
+        <details id="sendBudgetEditor"><summary>发言额度 · 全账号每日最多2000条</summary>
+          <p class="muted">群聊、私聊共用；文字、语音、图片及长文每个实际分段都计数。达到上限不再发送，不会排队到之后突发补发。此项目的手动发送也计入。</p>
+          <label>每日上限<input data-send-budget-daily type="number" min="1" max="2000" value="2000" disabled></label>
+          <label>每分钟上限<input data-send-budget-minute type="number" min="1" max="60" value="20" disabled></label>
+          <button type="button" class="primary" data-send-budget-save disabled>保存全账号额度</button><button type="button" class="quiet" data-send-budget-reload>刷新计数</button>
+          <p class="muted" data-send-budget-status role="status">正在读取…</p><p class="muted">每天北京时间零点重新计算，重启不清零。超时、失败尝试及启用前的日志回补按保守占用处理。其他QQ客户端的操作无法由本项目拦截，2000不是腾讯保证安全的阈值。</p>
+        </details>
+        <details id="knowledgeEditor"><summary>资料库 · 群规、设定与常用说明</summary>
+          <p class="muted">手工录入资料，聊天时只查相关片段。角色外观和参考图仍在上方角色库。</p>
+          <p class="muted" data-knowledge-scope-label>请先选择群聊或私聊</p>
+          <label><input type="checkbox" data-knowledge-retrieval checked disabled>当前会话使用资料库</label>
+          <label>每次最多带入的资料字符<select data-knowledge-budget disabled><option value="600">600 · 更精简</option><option value="1100" selected>1100 · 默认</option><option value="1600">1600 · 更多细节</option><option value="2200">2200 · 长资料</option></select></label>
+          <button type="button" class="quiet wide" data-knowledge-settings-save disabled>保存当前会话检索设置</button>
+          <label>查找资料<input data-knowledge-query maxlength="120" placeholder="标题或正文关键词" disabled></label>
+          <button type="button" class="quiet" data-knowledge-search disabled>搜索</button><button type="button" class="quiet" data-knowledge-reload>重新读取</button>
+          <div data-knowledge-list></div><button type="button" class="quiet wide" data-knowledge-new disabled>新建资料</button>
+          <label>导入文本预览<input type="file" data-knowledge-file accept=".txt,.md,.markdown,text/plain,text/markdown" disabled></label>
+          <label>标题<input data-knowledge-title maxlength="120" disabled></label>
+          <label>来源说明<input data-knowledge-source maxlength="200" placeholder="例如：管理员整理的跑团规则" disabled></label>
+          <label>使用范围<select data-knowledge-scope disabled><option value="conversation">仅当前会话</option><option value="shared">所有群聊和私聊共享</option></select></label>
+          <label><input type="checkbox" data-knowledge-enabled checked disabled>启用这篇资料</label>
+          <label>资料正文<textarea data-knowledge-content rows="8" maxlength="200000" spellcheck="false" disabled></textarea></label>
+          <button type="button" class="primary wide" data-knowledge-save disabled>保存资料</button><button type="button" class="quiet" data-knowledge-delete disabled>删除当前资料</button>
+          <p class="muted" data-knowledge-status role="status">资料默认只在当前会话使用；切换为共享并保存后，所有会话都可检索。</p>
+        </details>
+        <details id="companionEditor"><summary>长期记忆、作息与自然聊天</summary>
+          <p class="muted">群／私聊分别保存，QQ 号识别人，改昵称不丢记忆。后台合批整理，不阻塞回复；不安装本地大模型。</p>
+          <label><input type="checkbox" data-companion-enabled disabled>长期记忆与按需召回</label>
+          <label><input type="checkbox" data-companion-emotion disabled>轻量情绪与熟悉度</label>
+          <label><input type="checkbox" data-companion-forgetting disabled>琐事随时间淡化 · 重要设定与约定保留</label>
+          <p class="muted">淡化只减少平时提起旧事，完整记忆仍可查看、按需召回；不删除聊天记录。</p>
+          <label><input type="checkbox" data-companion-natural disabled>同一话题短时自然接话</label>
+          <label><input type="checkbox" data-companion-diary disabled>互动日记 · 重要小事按日期记下</label>
+          <label><input type="checkbox" data-companion-idle disabled>日常主动聊天 · 接续之前的话题</label>
+          <p class="muted">空闲 30–90 分钟后择机说 1–3 句，遵守下方作息。授权私聊每天最多 3 轮、间隔至少 3 小时；每群每天最多 2 轮。群图会按话题与频率自动看；没回应不追发，不自动 @。</p>
+          <details><summary>作息与专注</summary>
+            <label><input type="checkbox" data-companion-routine disabled>启用安静时段（北京时间）</label>
+            <label>安静开始<input type="time" data-companion-quiet-start value="23:30" disabled></label>
+            <label>安静结束<input type="time" data-companion-quiet-end value="08:00" disabled></label>
+            <label><input type="checkbox" data-companion-focus disabled>专注模式 · 暂停主动另起话题</label>
+            <p class="muted">群里主动插话、主动私聊共用此设置；直接 @、叫名字、私聊请求和已开始的连续对话仍可回应。开始与结束相同时不限制时段。</p>
+          </details>
+          <p class="muted">这是基础接话；启用上方自主聊天时，由自主决策与频率设置接管。会话 AI 开关与屏蔽名单仍优先。</p>
+          <button class="quiet wide" data-companion-save disabled>保存记忆设置</button>
+          <label>查看当前聊天中某人的记忆<input data-companion-user inputmode="numeric" placeholder="填写 QQ 号" maxlength="13"></label>
+          <button class="quiet wide" data-companion-read>查看记忆及来源</button><div data-companion-list></div>
+          <label>搜索完整存档<input data-companion-archive-query placeholder="可留空查看最近记录" maxlength="240"></label><button class="quiet wide" data-companion-archive>读取本会话此人的完整存档</button><div data-companion-archive-list></div>
+          <p class="muted" data-companion-status role="status">聊天中可用 /remember 内容、/memory、/forget all；不会删除 QQ 聊天记录。</p>
+        </details>
+        <h3>实际调用模型</h3><select id="model" aria-label="实际 QQ 回复模型"><option value="local-qwen35-4b">本地 Qwen3.5 4B（优先聊天，专业自动升级）</option><option value="gpt-6-luna">GPT-6 Luna</option><option value="gpt-6-sol">GPT-6 Sol</option><option value="gpt-6-astra">GPT-6 Astra</option></select><button class="primary wide" id="saveModel">保存模型</button>
+        <section id="fastModeEditor" aria-label="快速模式设置"><label class="personality-switch"><input type="checkbox" data-fast-mode-toggle disabled>快速模式（回复 / 生图流程）</label><p class="muted">使用当前 Codex 模型的 Fast 通道，不换模型或降低思考强度；看图、生成指令、验图和纠错也适用。绘图工具自身耗时可能不变，Gemini 纯文字不适用。</p><p class="muted">Fast 订阅用量约为普通模式的 2.5 倍；API 等价费用按 2 倍估算，非实际扣款。默认关闭。</p><p data-fast-mode-status role="status">勾选后自动保存，下一条新请求生效。</p></section>
+        <p class="hint">文字回复与生图分别选择。看图仍使用 Codex；生图可选下方 GPT 或 Gemini。生成成功直接发送，不做质量验收。</p>
+        <p class="muted">QQ 聊天不公开后台型号。实际模型仅在本机设置中查看与切换；原图和狐宫静 OC 参考图保留。</p>
+        <section id="imageModelEditor" aria-label="生图模型设置">
+          <h3>生图模型</h3><label>图片由谁生成？<select data-image-provider aria-label="生图模型" disabled><option value="codex-cli">GPT（Codex）</option><option value="nano-banana-2">Gemini（Nano Banana 2）</option></select></label>
+          <label class="personality-switch"><input type="checkbox" data-image-fallback disabled>Gemini 额度不足时自动回退 GPT-6 Luna</label>
+          <p class="muted">不改变文字回复模型。回退仅用于明确的额度不足，不绕过安全限制；会使用 Codex 额度，原图和 OC 参考不变。</p>
+          <button class="primary wide" type="button" data-image-save disabled>保存生图设置</button><p class="muted" data-image-status role="status">保存后下一条生图请求生效。</p>
+        </section>
+        <section id="imageSearchEditor" class="settings-section">
+          <h3>搜图找出处</h3><label><input data-search-enabled type="checkbox" disabled>开启搜图</label>
+          <label>收到图片就自动搜的群号<textarea data-search-groups rows="3" placeholder="每行一个群号" disabled></textarea></label>
+          <p class="muted">其他群与私聊：附图或引用图片说“搜图 / 找出处”。会将图片提交给 SauceNAO、ascii2d，必要时提交 Google Lens。返回公开来源候选；不凭人脸识别现实身份。各会话 AI 开关继续有效。</p>
+          <button data-search-save class="primary wide" disabled>保存搜图设置</button><button data-search-reload class="quiet wide">重新读取与查询记录</button><p data-search-status class="muted" role="status">正在读取搜图设置…</p>
+          <details><summary>最近查询结果</summary><div data-search-history class="muted"></div></details>
+        </section>
+        <h3>今日用量</h3><p id="usage" class="usage">正在读取…</p>
+        <h3>服务与登录</h3><button class="quiet wide" id="startServices">启动 / 恢复后台服务</button><button class="quiet wide" id="settingsLogin">打开 QQ 扫码登录</button><button class="quiet wide" id="openManager">打开完整管理面板</button>
+        <p class="muted">全部 QQ 好友与已加入群聊均已授权 AI，新联系人自动同步。群聊可通过 @ 或上方自定义触发词唤醒；每个会话保留最近 300 条，不导入手机 QQ 的全部历史。</p>
+        <details><summary>连接诊断</summary><pre id="networkDiagnostics" class="connection-diagnostics" aria-label="连接诊断">正在读取…</pre></details>
+      </div>
+      <div id="stickerPanel" hidden><input id="stickerSearch" type="search" placeholder="搜索表情包" aria-label="搜索表情包"><div class="sticker-grid" id="stickerGrid"></div></div>
+      <div id="contactsPanel" hidden>
+        <p id="contactSummary" class="muted">正在读取全部 QQ 联系人…</p>
+        <h3>添加好友</h3><input id="lookupQQ" inputmode="numeric" placeholder="输入 QQ 号查询" aria-label="查询 QQ 号"><button id="lookupFriend" class="quiet wide">查询 QQ 资料</button><p id="lookupResult" class="muted"></p>
+        <p class="muted">当前接口不能主动发送好友申请。请在手机 QQ 搜索并添加，再点“同步”。别人发来的好友申请可在下方处理，无需登录电脑 QQ。</p>
+        <h3>好友 / 入群申请</h3><button id="refreshRequests" class="quiet wide">刷新申请</button><div id="requestList"></div>
+        <p class="muted">记录本功能启用后收到的申请。不会自动同意或拒绝。</p>
+      </div>
+      <div id="mentionPanel" hidden><input id="mentionSearch" type="search" placeholder="搜索群成员名字 / QQ 号" aria-label="搜索要 @ 的成员"><p class="muted">点击成员加入 @，真正通知对方；可选多位成员。</p><div id="mentionList"></div></div>
+      <div id="groupPanel" hidden>
+        <p id="groupRole" class="muted">正在读取真实群权限…</p>
+        <label for="groupName">群名称</label><input id="groupName" maxlength="60" aria-label="群名称"><button id="saveGroupName" class="quiet wide">修改群名称</button><button id="wholeBan" class="quiet wide">全员禁言</button>
+        <label for="memberSearch">搜索群成员</label><input id="memberSearch" placeholder="成员名字 / QQ 号" aria-label="搜索群成员"><div id="memberList"></div>
+        <section id="memberEditor" hidden><h3 id="memberTitle"></h3><input id="memberCard" maxlength="60" aria-label="成员群名片"><button id="saveMemberCard" class="quiet wide">修改群名片</button><select id="banDuration" aria-label="禁言时长"><option value="0">解除禁言</option><option value="600">禁言 10 分钟</option><option value="3600">禁言 1 小时</option><option value="86400">禁言 1 天</option></select><button id="banMember" class="quiet wide">执行禁言设置</button><button id="setAdmin" class="quiet wide">设置管理员</button><button id="kickMember" class="quiet wide danger">移出群聊</button></section>
+        <p class="muted">操作前会再次检查当前权限，并弹出确认。普通成员可改自己的群名片，管理员只能操作低于自身权限的成员。</p>
+      </div>
+    </aside>
+  </div>
+  <dialog id="imageViewer"><button id="closeViewer" aria-label="关闭大图">×</button><img id="largeImage" alt="图片预览"></dialog>
+  <input type="file" id="file" accept="image/png,image/jpeg,image/gif,image/webp" hidden>
+  <div class="toast" id="toast" role="status" hidden></div>
+  <script type="module" src="desktop.js"></script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+{
+  "enabled": true,
+  "autoGroups": [],
+  "concurrency": 1,
+  "maxQueue": 8,
+  "maxDurationSeconds": 1800,
+  "maxDownloadMB": 96,
+  "taskTimeoutSeconds": 900,
+  "perUserDaily": 5,
+  "perGroupDaily": 20,
+  "cacheHours": 24,
+  "tempRetentionHours": 6,
+  "transcriptRetentionDays": 30,
+  "useDedicatedCookies": {"bilibili": false, "douyin": false, "youtube": false}
+}

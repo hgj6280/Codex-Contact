@@ -1,0 +1,15 @@
+import {execFile} from 'node:child_process';
+import {promisify} from 'node:util';
+import {homedir} from 'node:os';
+import {join} from 'node:path';
+import {mkdir,writeFile} from 'node:fs/promises';
+import {createCliEnvironment} from '../src/qq-cli-network.mjs';
+const exec=promisify(execFile),root=join(homedir(),'Library','Application Support','CodexRemoteContact'),runtime=join(root,'video-runtime');
+await mkdir(runtime,{recursive:true,mode:0o700});
+const env=await createCliEnvironment()(process.env);
+await exec(join(root,'voice-runtime','venv','bin','python'),['-m','venv',join(runtime,'venv')],{env,timeout:30000});
+await exec(join(runtime,'venv','bin','python'),['-m','pip','install','yt-dlp[default]==2026.10.26','faster-whisper==1.2.1','av==16.1.0'],{env,timeout:300000,maxBuffer:2*1024*1024});
+await exec('npm',['install','--prefix',runtime,'--ignore-scripts','--no-audit','--no-fund','undici@8.12.3'],{env,timeout:120000});
+if(!process.argv.includes('--skip-model'))await exec(join(runtime,'venv','bin','python'),['-c',"from huggingface_hub import snapshot_download; import sys; snapshot_download('Systran/faster-whisper-base',local_dir=sys.argv[1],allow_patterns=['model.bin','config.json','tokenizer.json','vocabulary.*'])",join(runtime,'models','base')],{env:{...env,HF_HUB_DISABLE_TELEMETRY:'1',HF_HUB_DISABLE_XET:'1'},timeout:600000,maxBuffer:2*1024*1024});
+await writeFile(join(runtime,'versions.json'),JSON.stringify({ytDlp:'2026.10.26',fasterWhisper:'1.2.1',av:'16.1.0',asr:'Systran/faster-whisper-base',compute:'CPU int8, one thread',installedAt:new Date().toISOString()},null,2),{mode:0o600});
+console.log('Video runtime installed at '+runtime);

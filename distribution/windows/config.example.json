@@ -1,0 +1,8 @@
+{
+  "qqAccount": "",
+  "allowedUsers": [],
+  "allowedGroups": [],
+  "model": "gpt-5.6-luna",
+  "reasoningEffort": "low",
+  "roleplay": {"groupId":"", "targetId":"", "enabled":false, "remaining":0}
+}

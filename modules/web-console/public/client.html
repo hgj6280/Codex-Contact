@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>狐宫静 · 群友管理</title>
+    <script>try { document.documentElement.dataset.theme = localStorage.getItem('qq-console-theme') || 'light'; } catch {}</script>
+    <link rel="stylesheet" href="client.css?v=20260930-chat" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="topbar">
+        <div>
+          <p class="eyebrow">狐宫静 · AI 群友</p>
+          <h1>群友管理</h1>
+        </div>
+        <div class="top-actions">
+          <button id="themeToggle" class="icon-button" type="button" aria-label="切换夜间模式" title="切换夜间模式" aria-pressed="false">☾</button>
+          <span id="hubStatus" class="status-pill warn">连接中</span>
+          <button id="openHub" class="icon-button" title="打开 WebUI" aria-label="打开 WebUI">↗</button>
+          <button id="refresh" class="icon-button" title="刷新" aria-label="刷新">↻</button>
+        </div>
+      </section>
+
+      <nav class="dashboard-nav" aria-label="管理分区">
+        <button type="button" data-dashboard-tab="chat" aria-pressed="false">群聊</button>
+        <button type="button" data-dashboard-tab="overview" aria-pressed="true">运行概览</button>
+        <button type="button" data-dashboard-tab="models" aria-pressed="false">AI 设置</button>
+        <button type="button" data-dashboard-tab="access" aria-pressed="false">群与联系人</button>
+        <button type="button" data-dashboard-tab="memory" aria-pressed="false">记忆管理</button>
+        <button type="button" data-dashboard-tab="events" aria-pressed="false">最近消息</button>
+      </nav>
+
+      <section class="switch-row" data-dashboard-view="overview">
+        <article class="switch-card">
+          <div>
+            <h2>iMessage</h2>
+            <p>可信联系人控制台，私聊可直接回应，远程执行模式从这里进入。</p>
+          </div>
+          <label class="switch">
+            <input id="imessageToggle" type="checkbox" />
+            <span></span>
+          </label>
+        </article>
+
+        <article class="switch-card">
+          <div>
+            <h2>QQ</h2>
+            <p>白名单群内 @机器人、回复机器人或提到“狐宫静”即可触发；私聊按开关接收。</p>
+          </div>
+          <label class="switch">
+            <input id="qqToggle" type="checkbox" />
+            <span></span>
+          </label>
+        </article>
+      </section>
+
+      <section class="chat-panel" data-dashboard-view="chat" hidden aria-label="QQ 群聊">
+        <aside class="chat-sidebar">
+          <div class="chat-sidebar-head"><h2>群聊</h2><span id="chatGroupCount" class="chat-count">0</span></div>
+          <label class="sr-only" for="chatSearch">搜索群名或群号</label>
+          <input id="chatSearch" type="search" placeholder="搜索群名 / 群号" autocomplete="off" />
+          <div id="chatGroups" class="chat-group-list" aria-label="选择 QQ 群"></div>
+        </aside>
+        <div class="chat-conversation">
+          <header class="chat-heading">
+            <div><h2 id="chatTitle">选择一个群聊</h2><p id="chatSubtitle">查看消息，以机器人账号发送</p></div>
+            <span id="chatAutoStatus" class="status-pill">同步中</span>
+          </header>
+          <div id="chatMessages" class="chat-messages" role="log" aria-label="群聊天记录" aria-live="off"><p class="chat-empty">从左侧选择一个群聊</p></div>
+          <form id="chatSendForm" class="chat-composer">
+            <label class="sr-only" for="chatInput">发送到当前群的消息</label>
+            <textarea id="chatInput" rows="3" maxlength="2000" placeholder="输入消息…" disabled></textarea>
+            <div class="chat-compose-footer"><span id="chatSendHint">Enter 发送 · Shift+Enter 换行</span><span id="chatLength">0 / 2000</span><button id="chatSend" class="button primary" type="submit" disabled>发送</button></div>
+            <p id="chatSendStatus" role="status"></p>
+          </form>
+          <p class="chat-history-note">每群保留最近 300 条。早期记录为已有聊天片段，新消息会持续同步。</p>
+        </div>
+      </section>
+
+      <section class="panel trigger-editor" id="triggerEditor" data-dashboard-view="models" hidden aria-label="群聊触发词设置">
+        <h2>群聊触发词</h2>
+        <label class="trigger-switch"><input type="checkbox" data-trigger-toggle role="switch" disabled>启用关键词触发</label>
+        <p>已授权群消息包含任意一个词就能唤醒 AI，不需要 @。</p>
+        <label for="triggerText">自定义触发词</label><textarea id="triggerText" data-trigger-text rows="4" maxlength="1000" spellcheck="false" disabled placeholder="狐宫静&#10;小狐狸&#10;静静"></textarea>
+        <p>每行一个，也可用逗号分隔；最多 20 个，每个最多 40 字。按文字包含匹配，英文不区分大小写，不支持正则。</p>
+        <div class="personality-actions"><button class="primary" data-trigger-save disabled>保存触发词</button><button class="quiet" data-trigger-reload>重新读取</button></div>
+        <p data-trigger-status role="status">正在读取触发词…</p>
+        <p>关闭只停用关键词触发，@、引用自己的消息、私聊及独立命令不变；已忽略的机器人仍不会触发。</p>
+      </section>
+      <section class="panel personality-editor" id="personalityEditor" data-dashboard-view="models" hidden aria-label="QQ 人设设置">
+        <h2>QQ 群友人设</h2>
+        <label class="personality-switch"><input type="checkbox" data-personality-toggle role="switch" disabled>启用自定义人设</label>
+        <p>适用于所有群聊和私聊。关闭开关恢复默认，已保存的自定义内容仍保留。</p>
+        <label for="personalityText">编辑人设</label>
+        <label>角色名字（留空从人设首句识别）<input data-personality-name aria-label="角色名字" maxlength="32" placeholder="从人设首句识别" disabled></label>
+          <textarea id="personalityText" data-personality-text rows="12" maxlength="8000" spellcheck="false" disabled placeholder="写下角色性格、语气、语癖、回复长度和互动习惯…"></textarea>
+        <p class="personality-count" data-personality-count>0 / 8000</p>
+        <div class="personality-actions"><button class="button primary" type="button" data-personality-save disabled>保存人设</button><button class="button" type="button" data-personality-reset disabled>填入默认人设</button><button class="button" type="button" data-personality-reload>重新读取</button></div>
+        <p data-personality-status role="status">正在读取人设…</p>
+        <a href="/api/qq/personality/default" download="qq-soul.default-backup.md">下载默认人设备份</a>
+        <p>下一条新请求生效，无需重新登录。人设不改变权限和触发条件；狐宫静 OC 参考图保留。内容越精简，首次回复越快。</p>
+      </section>
+
+      <section class="panel" data-dashboard-view="models" hidden>
+        <h2>QQ 回复模型</h2>
+        <details class="help-details">
+        <summary>跑团联动设置</summary>
+        <p>跑团群 20010 · 额外 @10010 · 每次最多 10 条回复</p>
+        <button id="roleplayStart" class="button" type="button">开启跑团 / 重置 10 条</button>
+        <button id="roleplayStop" class="button" type="button">停止跑团联动</button>
+        <p id="roleplayStatus" role="status"></p>
+        </details>
+        <p id="qqModelCurrent">正在读取当前模型…</p>
+        <form id="qqModelForm" class="inline-form">
+          <label for="qqModelSelect">模型</label>
+          <select id="qqModelSelect" class="button">
+            <option value="local-qwen35-4b">本地 Qwen3.5 4B（优先聊天，专业自动升级）</option>
+            <option value="gpt-6-astra">GPT-6 Astra</option>
+            
+            <option value="gpt-6-sol">GPT-6 Sol</option>
+            <option value="gpt-6-luna">GPT-6 Luna</option>
+          </select>
+          <button id="qqModelSave" class="button" type="submit">保存模型</button>
+        </form>
+        <p id="qqModelStatus" role="status">仅影响 QQ 新请求，保留当前思考强度，无需重启。</p>
+        <section id="fastModeEditor" aria-label="快速模式设置"><label><input type="checkbox" data-fast-mode-toggle disabled>快速模式（回复 / 生图流程）</label><p>加速当前 Codex 模型的文字、看图、生成指令、验图和纠错调用；不换模型、不跳过验图。绘图工具自身耗时可能不变，Gemini 纯文字不适用。</p><p>Fast 订阅用量约为普通模式的 2.5 倍；API 等价费用按 2 倍估算，非实际扣款。默认关闭。</p><p data-fast-mode-status role="status">勾选后自动保存，下一条新请求生效。</p></section>
+        <section id="imageModelEditor" aria-label="生图模型设置">
+          <h3>生图模型</h3><label>图片由谁生成？<select data-image-provider aria-label="生图模型" disabled><option value="codex-cli">GPT（Codex）</option><option value="nano-banana-2">Gemini（Nano Banana 2）</option></select></label>
+          <label><input type="checkbox" data-image-fallback disabled>Gemini 额度不足时自动回退 GPT-6 Luna</label>
+          <p>只影响生图，不改变文字回复。回退会使用 Codex 额度，原图与 OC 参考图保持不变，不绕过安全限制。</p>
+          <button class="button" type="button" data-image-save disabled>保存生图设置</button><p data-image-status role="status">保存后下一条生图生效。</p>
+        </section>
+        <p>看图仍用 Codex，生图单独选择 GPT 或 Gemini。生成成功直接发送，不做质量验收；不会自动切到 Sol。</p>
+        <details id="autonomyEditor"><summary>自主聊天与操作权限</summary>
+          <label><input type="checkbox" data-autonomy-enabled disabled>启用自主聊天决策</label>
+          <label><input type="checkbox" data-autonomy-contextualReplies disabled>理解上下文中的呼唤和提及</label>
+          <p>可参考本群近两小时内最多 120 条消息，每次按相关性选最多 16 条，总长度不超过 2800 字符。优先保留最近对话、引用和称呼来源，判断“她呢”“刚才那个 AI”在说谁；指别人或不确定时保持安静。按群隔离，沿用会话 AI 开关，不额外调用总结模型。</p>
+          <p>有人继续话题就能接，不用每句都 @；也会低频加入能接上的新话题。日常回复可自然分成一至三条，没人接就停，不固定连发。续聊判断间隔至少五秒，仍遵守频率和会话开关。</p>
+          <p data-autonomy-target></p><label><input type="checkbox" data-autonomy-conversation disabled>当前会话启用自主决策</label>
+          <label><input type="checkbox" data-autonomy-friendRequests disabled>自动审核并同意正常好友申请</label>
+          <label><input type="checkbox" data-autonomy-privateMessages disabled>允许主动私聊已有好友</label>
+          <label><input type="checkbox" data-autonomy-moderation disabled>允许自主禁言和解除禁言</label>
+          <p>群管需本人有权限，指令来自下方授权 QQ 或本群管理员。好友仅支持处理收到的申请。</p>
+          <label>授权管理 QQ<input data-autonomy-controllers placeholder="多个 QQ 号用逗号分隔" disabled></label>
+          <label>主动插话间隔（秒，续聊单独限频）<input data-autonomy-interval type="number" min="15" max="1800" value="20"></label>
+          <label>每群每小时主动回复上限<input data-autonomy-limit type="number" min="1" max="20" value="15"></label>
+          <label>单次自主禁言上限（分钟）<input data-autonomy-mute type="number" min="1" max="1440" value="10"></label>
+          <button class="button" type="button" data-autonomy-save disabled>保存自主聊天设置</button><button class="button" type="button" data-autonomy-reload>刷新设置与操作记录</button>
+          <p data-autonomy-status role="status">正在读取…</p><details><summary>最近判断与操作记录</summary><pre data-autonomy-log></pre></details>
+        </details>
+        <details id="companionEditor"><summary>长期记忆与自然聊天</summary>
+          <p>记忆按群／私聊和 QQ 号隔离，后台合批整理；不安装本地大模型，不影响生图。</p>
+          <label><input type="checkbox" data-companion-enabled disabled>长期记忆与按需召回</label>
+          <label><input type="checkbox" data-companion-emotion disabled>轻量情绪与熟悉度</label>
+          <label><input type="checkbox" data-companion-natural disabled>同一话题短时自然接话</label>
+          <label><input type="checkbox" data-companion-diary disabled>互动日记 · 重要小事按日期记下</label>
+          <label><input type="checkbox" data-companion-idle disabled>日常主动聊天 · 接续之前的话题</label>
+          <p>空闲 30–90 分钟后择机说 1–3 句，09:00–23:30。授权私聊每天最多 3 轮、间隔至少 3 小时；每群每天最多 2 轮。群图会按话题与频率自动看；没回应不追发，不自动 @。</p>
+          <button class="button" type="button" data-companion-save disabled>保存记忆设置</button>
+          <label>查看聊天页当前会话中某人的记忆<input data-companion-user inputmode="numeric" placeholder="QQ 号" maxlength="13"></label>
+          <button class="button" type="button" data-companion-read>查看记忆及来源</button><div data-companion-list></div>
+          <p data-companion-status role="status">聊天中可用 /remember 内容、/memory、/forget all；不删除 QQ 聊天记录。</p>
+        </details>
+      </section>
+
+      <section class="panel" aria-labelledby="qqValidationTitle" data-dashboard-view="models" hidden>
+        <h2 id="qqValidationTitle">最近生图验收</h2>
+        <p>点击报告可查看每张生成图、分类检查结果、错误位置、修正建议和每轮实际修正指令。</p>
+        <div id="qqValidationReports" role="status">正在读取验收报告…</div>
+      </section>
+
+      <section class="panel" aria-labelledby="qqUsageTitle" data-dashboard-view="overview">
+        <h2 id="qqUsageTitle">AI 群友用量统计</h2>
+        <p id="qqUsageSince">正在读取用量…</p>
+        <div class="usage-table-wrap">
+          <table class="usage-table">
+            <thead><tr><th scope="col">范围</th><th scope="col">总 token</th><th scope="col">输入</th><th scope="col">输出</th><th scope="col">缓存输入</th><th scope="col">估算费用（人民币）</th></tr></thead>
+            <tbody id="qqUsageRows"></tbody>
+          </table>
+        </div>
+        <p id="qqUsageStatus" role="status"></p>
+        <details class="help-details">
+        <summary>统计口径与查询方法</summary>
+        <p>全部 QQ 群和私聊合计；缓存已包含在输入内，总量＝输入＋输出。按北京时间统计，不含历史缺失记录、桌面聊天及 iMessage；不是账号剩余额度或生图独立费用。</p>
+        <p id="qqUsagePricing"></p>
+        <p><a href="https://developers.openai.com/api/docs/pricing" target="_blank" rel="noopener noreferrer">官方价格依据</a> · 按每次实际模型估算，不代表 Codex 订阅实际扣款。</p>
+        <p>群里问“狐宫静，今日用量”或“狐宫静，累计用了多少 token”；私聊可直接问“用量统计”。查询不调用模型。</p>
+        </details>
+      </section>
+
+      <section class="maintenance" data-dashboard-view="overview">
+        <div class="section-head">
+          <div>
+            <h2>维护状态</h2>
+            <p id="lastUpdated">等待同步</p>
+          </div>
+          <button id="refreshMaintenance" class="button">立即检查</button>
+        </div>
+        <div id="healthGrid" class="health-grid"></div>
+      </section>
+
+      <section class="memory-panel panel" data-dashboard-view="memory" hidden>
+        <div class="section-head compact">
+          <div>
+            <h2>记忆管理</h2>
+            <p>查看 iMessage、远程执行模式和 QQ 轻量记忆。</p>
+          </div>
+          <button id="refreshMemory" class="button">刷新记忆</button>
+        </div>
+        <div class="memory-tabs" role="tablist" aria-label="记忆类型">
+          <button class="tab active" data-memory-tab="unified" type="button">统一记忆</button>
+          <button class="tab" data-memory-tab="imessage" type="button">iMessage</button>
+          <button class="tab" data-memory-tab="remoteExecution" type="button">远程执行模式</button>
+          <button class="tab" data-memory-tab="qq" type="button">QQ</button>
+        </div>
+        <div id="memoryView" class="memory-view"></div>
+      </section>
+
+      <section class="split" data-dashboard-view="access" hidden>
+        <article class="panel">
+          <div class="section-head compact">
+            <div>
+              <h2>QQ群白名单</h2>
+              <p>列表会保存到 Hub 设置。</p>
+            </div>
+            <strong id="groupCount">0</strong>
+          </div>
+          <div id="groupList" class="item-list"></div>
+          <form id="addGroupForm" class="inline-form">
+            <input id="groupInput" inputmode="numeric" placeholder="群 ID" />
+            <button class="button primary" type="submit">添加</button>
+          </form>
+        </article>
+
+        <article class="panel">
+          <div class="section-head compact">
+            <div>
+              <h2>iMessage 联系人</h2>
+              <p>只响应这些号码或邮箱。</p>
+            </div>
+            <strong id="handleCount">0</strong>
+          </div>
+          <div id="handleList" class="item-list"></div>
+          <form id="addHandleForm" class="inline-form">
+            <input id="handleInput" placeholder="手机号或邮箱" />
+            <button class="button primary" type="submit">添加</button>
+          </form>
+          <form id="replyHandleForm" class="inline-form reply-form">
+            <input id="replyHandleInput" placeholder="默认回复账号，可留空" />
+            <button class="button" type="submit">保存</button>
+          </form>
+        </article>
+      </section>
+
+      <section class="split" data-dashboard-view="events" hidden>
+        <article class="panel">
+          <div class="section-head compact">
+            <div>
+              <h2>QQ 最近事件</h2>
+              <p>显示最近是否回复。</p>
+            </div>
+          </div>
+          <div id="qqEvents" class="events"></div>
+        </article>
+
+        <article class="panel">
+          <div class="section-head compact">
+            <div>
+              <h2>iMessage 最近事件</h2>
+              <p>命令、图片和私聊回应。</p>
+            </div>
+          </div>
+          <div id="imessageEvents" class="events"></div>
+        </article>
+      </section>
+    </main>
+
+    <script type="module" src="client.js?v=20261001-personality"></script>
+  </body>
+</html>
