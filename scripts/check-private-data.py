@@ -104,7 +104,7 @@ def check_tree(tree):
         parts = pathlib.PurePosixPath(path).parts
         if (mode not in ("100644","100755") or typ != "blob" or
                 any(BLOCK_DIR.fullmatch(p) for p in parts) or BLOCK_FILE.search(parts[-1]) or
-                path in BLOCK_EXACT or path.startswith("modules/qq-llbot/bin/")):
+                parts[-1].casefold() == "project_status.md" or path in BLOCK_EXACT or path.startswith("modules/qq-llbot/bin/")):
             fail(path, "runtime, credential, link or archive path")
             continue
         check_text(path, path, policy.get("paths", {}).get(path))

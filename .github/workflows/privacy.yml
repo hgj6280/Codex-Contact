@@ -1,0 +1,27 @@
+name: Repository privacy
+on: [push, pull_request]
+
+permissions:
+  contents: read
+
+jobs:
+  privacy:
+    name: Privacy checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out full history
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Scan all reachable history
+        run: |
+          test "$(git rev-parse --is-shallow-repository)" = false
+          git config --local user.email '319007209+hgj6280@users.noreply.github.com'
+          python3 scripts/check-private-data.py --history
+
+      - name: Test the commit hooks
+        if: ${{ !cancelled() }}
+        run: python3 scripts/test-private-data.py

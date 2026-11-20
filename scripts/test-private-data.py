@@ -36,6 +36,7 @@ def run_tests(work):
         ("QQ email", "example.txt", invalid.upper(), {}, "test", "QQ email"),
         ("provider key", "example.txt", credential, {}, "test", "credential"),
         ("custom secret", "example.txt", 'client_secret = "' + "t"*35 + '"', {}, "test", "credential"),
+        ("local status report", "PROJECT_STATUS.md", "sample", {}, "test", "runtime"),
         ("forced runtime file", "data/messages.json", "[]", {}, "test", "runtime"),
         ("renamed chat export", "notes.json", '{"post_type":"message","message_id":1,"raw_message":"sample"}', {}, "test", "runtime"),
         ("SQLite sidecar", "nested/test.sqlite-wal", "sample", {}, "test", "runtime"),

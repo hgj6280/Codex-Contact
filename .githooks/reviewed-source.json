@@ -1,6 +1,7 @@
 {
   "art": {},
   "numbers": {
+    ".github/workflows/privacy.yml": "cb3e213ba3a9e1fd49f4a19ccbac31240649582a86199941de6f0ab04d75a5cd",
     "README.md": "25ecf91808f32ed317dc070f1a0e24a24cad7e33114ba429c86c32066d01781c",
     "config/settings.example.json": "18dff0abe5e0029773414ce9bd65122f60c20d24d2de793637085080e11c8acb",
     "distribution/windows/initialize.mjs": "5494e6e5d3e5925445c42ba802065127b83c2b92ace65880dfa6a0773213088d",
